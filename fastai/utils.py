@@ -135,3 +135,17 @@ class ProgressCB(Callback):
                     [fc.L.range(self.losses), self.losses],
                     [fc.L.range(learn.epoch).map(lambda x: (x+1)*len(learn.dls.train)), self.val_losses]
                 ])
+
+def append_stats(hook, mod, inp, outp):
+    if not hasattr(hook, 'stats'): hook.stats = ([], [], [])
+    acts = outp.detach()
+    hook.stats[0].append(acts.mean())
+    hook.stats[1].append(acts.std())
+    hook.stats[2].append(acts.abs().histc(40, 0, 10))
+
+def get_hist(h):
+    return torch.stack(h.stats[2]).t().float().log1p()
+
+def get_min(h):
+    h1 = torch.stack(h.stats[2]).t().float()
+    return h1[0]/h1.sum(0)

@@ -1,7 +1,7 @@
 
 import fastcore.all as fc
 from functools import partial
-from utils import Callback, get_hist
+from utils import Callback, get_hist, get_min
 from fastai.vision.all import get_grid, show_image, subplots
 import numpy as np
 import math
@@ -74,8 +74,6 @@ class ActivationStats(HooksCB):
         fig, axes = get_grid(len(self), figsize=figsize)
         for ax, h in zip(axes.flat, self):
             show_image(get_hist(h), ax, origin='lower')
-        
-
 
 @fc.delegates(subplots)
 def get_grid(

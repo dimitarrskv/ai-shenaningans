@@ -7,6 +7,7 @@ from torcheval.metrics import MulticlassAccuracy, Mean
 from fastprogress import progress_bar,master_bar
 import numpy as np
 import random
+from torch import nn
 
 class with_cbs:
     def __init__(self, nm): self.nm = nm
@@ -149,3 +150,8 @@ def get_hist(h):
 def get_min(h):
     h1 = torch.stack(h.stats[2]).t().float()
     return h1[0]/h1.sum(0)
+
+def conv(ni, nf, ks=3, stride=2, act=nn.ReLU):
+    res = nn.Conv2d(ni, nf, stride=stride, kernel_size=ks, padding=ks//2)
+    if act: res = nn.Sequential(res, act())
+    return res

@@ -151,7 +151,9 @@ def get_min(h):
     h1 = torch.stack(h.stats[2]).t().float()
     return h1[0]/h1.sum(0)
 
-def conv(ni, nf, ks=3, stride=2, act=nn.ReLU):
-    res = nn.Conv2d(ni, nf, stride=stride, kernel_size=ks, padding=ks//2)
-    if act: res = nn.Sequential(res, act())
-    return res
+def conv(ni, nf, ks=3, stride=2, norm=nn.BatchNorm2d, act=nn.ReLU, bias=None):
+    if bias is None: bias = not isinstance(norm, (nn.BatchNorm1d, nn.BatchNorm2d, nn.BatchNorm3d))
+    layers = [nn.Conv2d(ni, nf, stride=stride, kernel_size=ks, padding=ks//2, bias=bias)]
+    if norm: layers.append(norm(nf))
+    if act: layers.append(act())
+    return nn.Sequential(*layers)

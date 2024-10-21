@@ -24,7 +24,10 @@ class with_cbs:
 def run_cbs(cbs, method_nm, learn=None):
     for cb in sorted(cbs, key=attrgetter('order')):
         method = getattr(cb, method_nm, None)
-        if method is not None: method(learn)
+        if method_nm == 'after_batch':
+            print('after batch')
+        if method is not None:
+            method(learn)
 
 class CancelFitException(Exception): pass
 class CancelBatchException(Exception): pass
@@ -89,6 +92,10 @@ class MetricsCB(Callback):
         for m in self.metrics.values(): m.update(to_device(learn.preds, device='cpu'), y)
         self.loss.update(to_device(learn.loss, device='cpu'), weight=len(x))
 
+class SingleBatchCB(Callback):
+    order = 1
+    def after_batch(self, learn):
+        raise CancelFitException()
 
 class DeviceCB(Callback):
     def __init__(self, device='cpu'): fc.store_attr()

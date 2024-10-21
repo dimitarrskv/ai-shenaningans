@@ -14,6 +14,6 @@ class GeneralReLU(nn.Module):
         if self.maxv is not None: x.clamp_max(self.maxv)
         return x
     
-def init_weights(m):
+def init_weights(m, leaky=0.):
     if isinstance(m, (nn.Conv1d, nn.Conv2d, nn.Conv3d)):
-        nn.init.kaiming_normal_(m.weight)
+        nn.init.kaiming_normal_(m.weight, a=leaky)
